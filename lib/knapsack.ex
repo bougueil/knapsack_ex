@@ -130,7 +130,7 @@ defmodule Knapsack do
 
     elapsed_ms = div(System.system_time(:microsecond) - t0, 100) / 10
 
-    Logger.info("#{inspect(mx)} bagged #{length(bagged)} items in #{elapsed_ms} ms.")
+    Logger.info("#{inspect(mx)} knapsack with #{length(bagged)} items in #{elapsed_ms} ms.")
 
     bagged =
       Enum.group_by(bagged, & &1)
@@ -138,6 +138,6 @@ defmodule Knapsack do
       |> Enum.map(fn {{name, _wt, _val}, num_item} -> [num_item: num_item, off: name] end)
 
     Logger.debug("#{inspect(bagged, pretty: true)}")
-    true == match?(^expected, bagged)
+    expected == bagged
   end
 end
