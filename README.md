@@ -12,6 +12,15 @@ mix deps.get
 mix test
 ```
 
+## run the knapsack algorithm
+```bash
+mix deps.get
+iex -S mix
+iex(1)> Knapsack.run(MatrixMapTuple)
+iex(1)> Knapsack.run(Matrix.Nx)
+```
+
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
