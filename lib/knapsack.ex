@@ -8,6 +8,88 @@ defmodule Knapsack do
   Elixir adaptation of https://rosettacode.org/wiki/Knapsack_problem/Bounded#Dynamic_programming_solution_2
   """
 
+  @doc """
+  runs the knapsack algo with an mx implementation
+
+  internally calls knapsack01_dp with some predefined items
+  """
+  @spec run(mx :: term()) :: true | false
+  def run(mx) do
+    # maxwt = 15
+    # maxwt = 400
+    maxwt = 500
+
+    groupeditems = [
+      # item 	weight (dag) (each) 	value (each) 	piece(s) 
+      {"map", 9, 150, 1},
+      {"compass", 13, 35, 1},
+      {"water", 153, 200, 3},
+      {"sandwich", 50, 60, 2},
+      {"glucose", 15, 60, 2},
+      {"tin", 68, 45, 3},
+      {"banana", 27, 60, 3},
+      {"apple", 39, 40, 3},
+      {"cheese", 23, 30, 1},
+      {"beer", 52, 10, 3},
+      {"suntan cream", 11, 70, 1},
+      {"camera", 32, 30, 1},
+      {"t-shirt", 24, 15, 2},
+      {"trousers", 48, 10, 2},
+      {"umbrella", 73, 40, 1},
+      {"waterproof trousers", 42, 70, 1},
+      {"waterproof overclothes", 43, 75, 1},
+      {"note-case", 22, 80, 1},
+      {"sunglasses", 7, 20, 1},
+      {"towel", 18, 12, 2},
+      {"socks", 4, 50, 1},
+      {"book", 30, 10, 2}
+    ]
+
+    optimal = [
+      [num_item: 3, off: "banana"],
+      [num_item: 1, off: "cheese"],
+      [num_item: 1, off: "compass"],
+      [num_item: 2, off: "glucose"],
+      [num_item: 1, off: "map"],
+      [num_item: 1, off: "note-case"],
+      [num_item: 1, off: "sandwich"],
+      [num_item: 1, off: "socks"],
+      [num_item: 1, off: "sunglasses"],
+      [num_item: 1, off: "suntan cream"],
+      [num_item: 1, off: "water"],
+      [num_item: 1, off: "waterproof overclothes"],
+      [num_item: 1, off: "waterproof trousers"]
+    ]
+
+    items =
+      for(
+        {item, wt, val, num} <- groupeditems,
+        do: List.duplicate({item, wt, val}, num)
+      )
+      |> List.flatten()
+
+    :erlang.garbage_collect()
+    t0 = System.system_time(:microsecond)
+
+    bagged = knapsack01_dp(items, maxwt, mx)
+
+    elapsed_ms = div(System.system_time(:microsecond) - t0, 100) / 10
+
+    Logger.info("#{inspect(mx)} knapsack with #{length(bagged)} items in #{elapsed_ms} ms.")
+
+    bagged =
+      Enum.group_by(bagged, & &1)
+      |> Enum.map(fn {x, y} -> {x, length(y)} end)
+      |> Enum.map(fn {{name, _wt, _val}, num_item} -> [num_item: num_item, off: name] end)
+
+    Mix.env() != :test &&
+      Logger.info(
+        "find the optimal solution ? = #{optimal == bagged}:\n#{inspect(bagged, pretty: true)}"
+      )
+
+    optimal == bagged
+  end
+
   # iter over the w columns
   defp iter_weight(table, _mx, _j, _wt, _val, maxwt, maxwt), do: table
 
@@ -61,83 +143,5 @@ defmodule Knapsack do
     bag = []
     sz_i = maxwt
     iter_item_add(bag, table, items, sz_i, nitems, mx)
-  end
-
-  @doc """
-  runs the knapsack algo with an mx implementation
-
-  internally calls knapsack01_dp with some predefined items
-  """
-  @spec run(mx :: term()) :: true | false
-  def run(mx) do
-    # maxwt = 15
-    # maxwt = 400
-    maxwt = 500
-
-    groupeditems = [
-      # item 	weight (dag) (each) 	value (each) 	piece(s) 
-      {"map", 9, 150, 1},
-      {"compass", 13, 35, 1},
-      {"water", 153, 200, 3},
-      {"sandwich", 50, 60, 2},
-      {"glucose", 15, 60, 2},
-      {"tin", 68, 45, 3},
-      {"banana", 27, 60, 3},
-      {"apple", 39, 40, 3},
-      {"cheese", 23, 30, 1},
-      {"beer", 52, 10, 3},
-      {"suntan cream", 11, 70, 1},
-      {"camera", 32, 30, 1},
-      {"t-shirt", 24, 15, 2},
-      {"trousers", 48, 10, 2},
-      {"umbrella", 73, 40, 1},
-      {"waterproof trousers", 42, 70, 1},
-      {"waterproof overclothes", 43, 75, 1},
-      {"note-case", 22, 80, 1},
-      {"sunglasses", 7, 20, 1},
-      {"towel", 18, 12, 2},
-      {"socks", 4, 50, 1},
-      {"book", 30, 10, 2}
-    ]
-
-    expected = [
-      [num_item: 3, off: "banana"],
-      [num_item: 1, off: "cheese"],
-      [num_item: 1, off: "compass"],
-      [num_item: 2, off: "glucose"],
-      [num_item: 1, off: "map"],
-      [num_item: 1, off: "note-case"],
-      [num_item: 1, off: "sandwich"],
-      [num_item: 1, off: "socks"],
-      [num_item: 1, off: "sunglasses"],
-      [num_item: 1, off: "suntan cream"],
-      [num_item: 1, off: "water"],
-      [num_item: 1, off: "waterproof overclothes"],
-      [num_item: 1, off: "waterproof trousers"]
-    ]
-
-    items =
-      for(
-        {item, wt, val, num} <- groupeditems,
-        do: List.duplicate({item, wt, val}, num)
-      )
-      |> List.flatten()
-
-    :erlang.garbage_collect()
-    t0 = System.system_time(:microsecond)
-
-    bagged = knapsack01_dp(items, maxwt, mx)
-
-    elapsed_ms = div(System.system_time(:microsecond) - t0, 100) / 10
-
-    Logger.info("#{inspect(mx)} knapsack with #{length(bagged)} items in #{elapsed_ms} ms.")
-
-    bagged =
-      Enum.group_by(bagged, & &1)
-      |> Enum.map(fn {x, y} -> {x, length(y)} end)
-      |> Enum.map(fn {{name, _wt, _val}, num_item} -> [num_item: num_item, off: name] end)
-
-    Logger.debug("#{inspect(bagged, pretty: true)}")
-    expected == bagged
   end
 end
