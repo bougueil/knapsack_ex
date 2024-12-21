@@ -21,8 +21,8 @@ defmodule Knapsack.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_doc, "~> 0.30", only: :docs, runtime: false},
-      {:nx, "~> 0.5"},
+      {:nx, "~> 0.9"},
+      {:ex_doc, "~> 0.35", only: :docs, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end

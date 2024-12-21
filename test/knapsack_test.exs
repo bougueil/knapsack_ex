@@ -1,24 +1,14 @@
 defmodule KnapsackTest do
-  use ExUnit.Case
+  use ExUnit.Case,
+    parameterize:
+      for(
+        mx <- [MatrixListTuple, MatrixMapTuple, MatrixMapTupleTensor, MatrixMapBinary, Matrix.Nx],
+        do: %{mx: mx}
+      )
+
   doctest Knapsack
 
-  test "MatrixListTuple" do
-    assert Knapsack.run(MatrixListTuple) == true
-  end
-
-  test "MatrixMapTuple" do
-    assert Knapsack.run(MatrixMapTuple) == true
-  end
-
-  test "MatrixMapTupleTensor" do
-    assert Knapsack.run(MatrixMapTupleTensor) == true
-  end
-
-  test "MatrixMapBinary" do
-    assert Knapsack.run(MatrixMapBinary) == true
-  end
-
-  test "Matrix.Nx" do
-    assert Knapsack.run(Matrix.Nx) == true
+  test "Knapsack", %{mx: mx} do
+    assert Knapsack.run(mx)
   end
 end
