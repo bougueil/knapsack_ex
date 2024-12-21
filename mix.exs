@@ -4,8 +4,8 @@ defmodule Knapsack.MixProject do
   def project do
     [
       app: :knapsack_ex,
-      version: "0.1.0",
-      elixir: "~> 1.15",
+      version: "0.1.1",
+      elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
